@@ -25,7 +25,8 @@ export async function getActiveAccount(userId: number, mode: Mode, db: Db = pool
   );
   if (acc) return acc;
   return tx(async (c) => {
-    // Lazily create (e.g. replay account on first use).
+    // Lazily create (e.g. replay account on first use). The advisory lock serialises concurrent first requests.
+    await c.query('SELECT pg_advisory_xact_lock(4242, $1)', [userId]);
     const again = await queryOne<AccountRow>('SELECT * FROM accounts WHERE user_id = $1 AND mode = $2 AND is_active FOR UPDATE', [userId, mode], c);
     if (again) return again;
     const last = await queryOne<{ season: number }>('SELECT max(season) AS season FROM accounts WHERE user_id = $1 AND mode = $2', [userId, mode], c);

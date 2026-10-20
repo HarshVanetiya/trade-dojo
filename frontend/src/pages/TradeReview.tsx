@@ -149,7 +149,7 @@ export function TradeReviewPage() {
 
       <div className="grid md-two" style={{ marginTop: 12 }}>
         <div>
-          <PriceChart candles={d.chart.candles} indicators={{ ...DEFAULT_INDICATORS, ema: { on: false, period: 21 }, volMa: { on: false, period: 20 } }} dark={dark} staticLines={lines} markers={markers} height={320} />
+          <PriceChart candles={d.chart.candles} indicators={{ ...DEFAULT_INDICATORS, ema: { on: false, period: 21 }, volMa: { on: false, period: 20 } }} dark={dark} staticLines={lines} markers={markers} height={320} fitAll />
           <p className="tiny faint">{d.chart.interval} candles around the trade. Planned stop/target shown dashed.</p>
 
           <div className="card">

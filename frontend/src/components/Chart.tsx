@@ -57,6 +57,8 @@ interface Props {
   drawMode?: 'none' | 'hline' | 'trend';
   onDraw?: (d: Omit<Drawing, 'id'>) => void;
   height?: number;
+  /** Show all candles instead of zooming to the most recent ones. */
+  fitAll?: boolean;
   markers?: Array<{ time: number; position: 'aboveBar' | 'belowBar'; color: string; text: string; shape: 'arrowUp' | 'arrowDown' | 'circle' | 'square' }>;
 }
 
@@ -234,7 +236,7 @@ export function PriceChart(props: Props) {
     if (firstTimeRef.current !== firstTime) {
       firstTimeRef.current = firstTime;
       c.timeScale().fitContent();
-      if (merged.length > 150) c.timeScale().setVisibleLogicalRange({ from: merged.length - 120, to: merged.length + 4 });
+      if (merged.length > 150 && !props.fitAll) c.timeScale().setVisibleLogicalRange({ from: merged.length - 120, to: merged.length + 4 });
     }
   }, [merged, indicators, dark, props.markers]); // eslint-disable-line react-hooks/exhaustive-deps
 

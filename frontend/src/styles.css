@@ -215,6 +215,7 @@ p { margin: 0 0 10px; }
 .card-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .card-title h2, .card-title h3 { margin: 0; }
 .grid { display: grid; gap: 12px; }
+.grid > * { min-width: 0; }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 720px) {
   .grid.md-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -538,3 +539,6 @@ section > h2 { margin: 6px 0 10px; }
 .replay-controls .btn { min-height: 40px; }
 .replay-controls .icon-btn { min-width: 44px; }
 @media (min-width: 1024px) { .replay-controls { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev); } }
+.user-card { display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.user-card .row { gap: 8px; }
+.user-card .row > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
