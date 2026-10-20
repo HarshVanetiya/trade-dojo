@@ -1,4 +1,5 @@
 import type { Express } from 'express';
+import { drawingsRouter } from './drawings.js';
 import { marketRouter } from './market.js';
 import { settingsPublicRouter } from './settings.js';
 import { tradesRouter } from './trades.js';
@@ -9,4 +10,5 @@ export function registerRoutes(app: Express) {
   app.use('/api', marketRouter);
   app.use('/api', tradingRouter);
   app.use('/api', tradesRouter);
+  app.use('/api', drawingsRouter);
 }

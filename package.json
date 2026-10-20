@@ -9,11 +9,13 @@
     "migrate": "npm --prefix backend run migrate",
     "backfill": "npm --prefix backend run backfill",
     "seed:demo": "npm --prefix backend run seed:demo",
-    "test": "npm --prefix backend test",
+    "test": "npm --prefix backend test && npm --prefix frontend test",
     "build": "npm --prefix backend run build && npm --prefix frontend run build"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }

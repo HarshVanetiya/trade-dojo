@@ -59,6 +59,7 @@ export interface Instrument {
   product: string;
   priceUnitLabel: string;
   unitGrams: number;
+  qtyUnit?: string;
   qtyStep: number;
   qtyMin: number;
   qtyMax: number;
