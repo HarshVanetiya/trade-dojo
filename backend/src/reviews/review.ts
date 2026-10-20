@@ -42,8 +42,9 @@ async function tradeCandles(trade: TradeRow, from: number, to: number): Promise<
 /** The instant up to which price data may be used for this trade (replay: the session's current time). */
 async function reviewAsOf(md: MarketData, trade: TradeRow): Promise<number> {
   if (trade.mode === 'replay' && trade.replay_session_id) {
-    const s = await queryOne<{ current_ts: Date }>('SELECT current_ts FROM replay_sessions WHERE id = $1', [trade.replay_session_id]);
-    if (s) return s.current_ts.getTime();
+    const s = await queryOne<{ current_ts: Date; to_ts: Date; status: string }>('SELECT current_ts, to_ts, status FROM replay_sessions WHERE id = $1', [trade.replay_session_id]);
+    // While the replay runs, never look past its clock; once it has ended the whole range may be used.
+    if (s) return s.status === 'ended' ? s.to_ts.getTime() : s.current_ts.getTime();
   }
   return md.clock();
 }

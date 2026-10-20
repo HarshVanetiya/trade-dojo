@@ -16,6 +16,7 @@ import { INTERVALS, useLiveCandles, type Interval } from '../lib/useCandles';
 import { useAuth, useIsDark, useMode, useToast, useTradingRefresh } from '../state/app';
 import { useDepth, useInstrument, useInstruments, useMarketStatus, useQuote } from '../state/marketStore';
 import { ReplayPage } from './Replay';
+import { ModeSwitch } from '../components/ModeSwitch';
 
 export interface TradeFeed {
   mode: Mode;
@@ -247,7 +248,7 @@ export function TradeView({ feed, code, setCode, interval, setInterval, interval
 
   const chartHeight = desktop ? 520 : 360;
   return (
-    <div className={`page with-tradebar trade-page ${feed.mode}`}>
+    <div className={`page with-tradebar trade-page ${feed.mode} ${controls && !desktop ? 'with-dock' : ''}`}>
       {header}
       <div className="trade-top">
         <InstrumentTabs value={code} onChange={setCode} quotes={quotesOverride} />
@@ -313,7 +314,7 @@ export function TradeView({ feed, code, setCode, interval, setInterval, interval
           <div className="row between" style={{ marginTop: 4 }}>
             <SourceNote ts={feed.updatedAt} provider={feed.status?.provider} />
           </div>
-          {controls}
+          {desktop && controls}
 
           <div className="tabs" role="tablist">
             {(['depth', 'stats', 'indicators', 'draw'] as const).map((t) => (
@@ -381,8 +382,8 @@ export function TradeView({ feed, code, setCode, interval, setInterval, interval
         </div>
       )}
       {!desktop && !adjusting && (
-        <div className="trade-bar">
-          {controls && <div className="trade-bar-note tiny muted">Simulated · {feed.mode === 'replay' ? 'replay balance' : 'live balance'} {points(feed.free)} free</div>}
+        <div className={`trade-bar ${controls ? 'with-controls' : ''}`}>
+          {controls && <div className="dock">{controls}</div>}
           <button className="btn sell grow big" onClick={() => openTicket('SHORT')} disabled={!inst}>
             <span>SELL</span>
             <span className="tiny num">{quote && inst ? price(marketRef('SHORT', quote, inst)) : ''}</span>
@@ -402,7 +403,7 @@ export function TradeView({ feed, code, setCode, interval, setInterval, interval
   );
 }
 
-function useMarketStats(code: string, enabled: boolean) {
+export function useMarketStats(code: string, enabled: boolean) {
   const [stats, setStats] = useState<MarketStats | null>(null);
   useEffect(() => {
     if (!enabled) return;
@@ -478,19 +479,6 @@ function LiveTrade() {
       }}
       header={<ModeSwitch />}
     />
-  );
-}
-
-export function ModeSwitch() {
-  const { mode, setMode } = useMode();
-  return (
-    <div className="page-header">
-      <h1 className="sr-only">Trade</h1>
-      <div className="segmented mode-switch" role="radiogroup" aria-label="Mode">
-        <button className={mode === 'live' ? 'active' : ''} onClick={() => setMode('live')} aria-pressed={mode === 'live'}>Live</button>
-        <button className={mode === 'replay' ? 'active' : ''} onClick={() => setMode('replay')} aria-pressed={mode === 'replay'}>Replay</button>
-      </div>
-    </div>
   );
 }
 

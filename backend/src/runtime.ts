@@ -4,13 +4,18 @@ import type { MarketData } from './market/marketData.js';
 import { depthView, quoteView } from './market/views.js';
 import { queryOne } from './db/pool.js';
 import { generateReview, refreshPendingReviews } from './reviews/review.js';
+import { ReplayService } from './replay/replay.js';
 import { hub } from './ws/hub.js';
 
 /** Wire market data, the trading engine and the WebSocket hub together. */
 export function wireRuntime(md: MarketData) {
   const engine = new TradingEngine(md, { send: (userId, type, data) => hub.sendToUser(userId, type, data) });
+  const replay = new ReplayService(md, engine);
+  replay.send = (userId, type, data) => hub.sendToUser(userId, type, data);
   ctx.md = md;
   ctx.engine = engine;
+  ctx.replay = replay;
+  void replay.init().catch((err) => md.recordError(`Replay init failed: ${err.message}`));
 
   md.on('quote', (q, meta) => {
     engine.onLiveQuote(q, meta);

@@ -26,7 +26,7 @@ export function Skeleton({ h = 16, w = '100%', style }: { h?: number; w?: number
 export function SourceNote({ ts, provider }: { ts?: number | string | null; provider?: string }) {
   return (
     <span className="tiny faint">
-      Market data: {provider === 'mock' ? 'simulated (mock provider)' : 'MCX via Upstox'} · updated {timeAgo(ts ?? null)}
+      {provider === 'replay' ? 'Historical MCX data via Upstox · replay clock shown above' : <>Market data: {provider === 'mock' ? 'simulated (mock provider)' : 'MCX via Upstox'} · updated {timeAgo(ts ?? null)}</>}
     </span>
   );
 }

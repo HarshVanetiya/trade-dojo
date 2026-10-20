@@ -525,3 +525,16 @@ section > h2 { margin: 6px 0 10px; }
 .review-hero.win { border-left: 4px solid var(--profit); }
 .review-hero.loss { border-left: 4px solid var(--loss); }
 .plan-quote { margin: 8px 0; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--bg-sunken); border-radius: 0 8px 8px 0; font-style: italic; }
+.trade-bar.with-controls .dock { width: 100%; }
+.page.with-tradebar.with-dock { padding-bottom: calc(var(--nav-h) + 150px + var(--safe-bottom)); }
+.replay-controls { display: flex; flex-direction: column; gap: 6px; }
+.replay-controls .rc-top { display: flex; align-items: center; gap: 8px; }
+.replay-controls .rc-row { display: flex; align-items: center; gap: 6px; }
+.replay-controls .speeds { display: flex; gap: 4px; flex: 1; min-width: 0; }
+.replay-controls .speeds .chip { flex: 1; min-width: 0; min-height: 40px; padding: 0 4px; }
+.replay-controls .progress { flex: 1; height: 4px; background: var(--bg-sunken); border-radius: 2px; overflow: hidden; }
+.replay-controls .progress > div { height: 100%; background: var(--replay); }
+.replay-controls .clock { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 13px; white-space: nowrap; }
+.replay-controls .btn { min-height: 40px; }
+.replay-controls .icon-btn { min-width: 44px; }
+@media (min-width: 1024px) { .replay-controls { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev); } }
