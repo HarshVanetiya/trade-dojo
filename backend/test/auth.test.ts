@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app.js';
 import { pool, query } from '../src/db/pool.js';
 import { seedAdmin } from '../src/services/auth.js';
@@ -9,7 +9,6 @@ const app = createApp();
 
 describe('auth', () => {
   beforeEach(resetDb);
-  afterAll(() => pool.end());
 
   it('signs up with starting points, logs in, and reads /me', async () => {
     const res = await request(app)

@@ -9,3 +9,10 @@ process.env.ADMIN_PASSWORD = 'admin-password';
 process.env.EMAIL_VERIFICATION = '0';
 process.env.AI_COACH_ENABLED = '0';
 process.env.DB_POOL_MAX = '5';
+
+import { afterAll } from 'vitest';
+
+afterAll(async () => {
+  const { pool } = await import('../src/db/pool.js');
+  await pool.end();
+});
