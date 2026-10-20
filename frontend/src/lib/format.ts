@@ -28,14 +28,15 @@ export function points(paise: number | null | undefined, opts: { sign?: boolean 
 
 export function pct(v: number | null | undefined, opts: { sign?: boolean; digits?: number } = {}): string {
   if (v === null || v === undefined || Number.isNaN(v)) return '-';
-  const n = Number(v);
+  const d = opts.digits ?? 2;
+  const n = Number(Number(v).toFixed(d)); // avoid "-0.00%"
   const sign = opts.sign ? (n > 0 ? '+' : n < 0 ? '−' : '') : n < 0 ? '−' : '';
-  return `${sign}${Math.abs(n).toFixed(opts.digits ?? 2)}%`;
+  return `${sign}${Math.abs(n).toFixed(d)}%`;
 }
 
 export function rMult(v: number | null | undefined): string {
   if (v === null || v === undefined) return '-';
-  const n = Number(v);
+  const n = Number(Number(v).toFixed(2));
   return `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(n).toFixed(2)}R`;
 }
 
