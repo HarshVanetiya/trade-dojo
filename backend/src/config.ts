@@ -34,8 +34,7 @@ const schema = z.object({
   EMAIL_VERIFICATION: bool,
   AI_COACH_ENABLED: bool,
   AI_COACH_API_KEY: z.string().optional().default(''),
-  AI_COACH_MODEL: z.string().default('claude-sonnet-5-5'),
-  AI_COACH_API_URL: z.string().default('https://api.anthropic.com/v1/messages'),
+  AI_COACH_MODEL: z.string().default('claude-opus-5-5'),
 });
 
 const parsed = schema.safeParse(process.env);
