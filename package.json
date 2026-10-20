@@ -1,0 +1,19 @@
+{
+  "name": "tradedojo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "TradeDojo: learn to trade MCX gold and silver with virtual points",
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "migrate": "npm --prefix backend run migrate",
+    "backfill": "npm --prefix backend run backfill",
+    "seed:demo": "npm --prefix backend run seed:demo",
+    "test": "npm --prefix backend test",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": { "node": ">=22" }
+}

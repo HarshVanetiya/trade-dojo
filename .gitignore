@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.local
+*.pem
+!backend/test/fixtures/*.pem
+coverage/
+.DS_Store
+frontend/dev-dist/
+.test-pg/
