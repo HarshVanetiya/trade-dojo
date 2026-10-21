@@ -8,8 +8,10 @@ pg.types.setTypeParser(20, (v) => Number.parseInt(v, 10));
 pg.types.setTypeParser(1700, (v) => Number.parseFloat(v));
 
 function sslConfig(): pg.PoolConfig['ssl'] {
-  if (!config.DB_CA_CERT_PATH) return undefined;
-  return { rejectUnauthorized: true, ca: fs.readFileSync(config.DB_CA_CERT_PATH, 'utf8') };
+  if (config.DB_CA_CERT_PATH) return { rejectUnauthorized: true, ca: fs.readFileSync(config.DB_CA_CERT_PATH, 'utf8') };
+  // Pasted into a single-line env var, newlines may arrive as literal "\n".
+  if (config.DB_CA_CERT) return { rejectUnauthorized: true, ca: config.DB_CA_CERT.replace(/\\n/g, '\n') };
+  return undefined;
 }
 
 export const pool = new pg.Pool({

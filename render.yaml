@@ -5,9 +5,10 @@ services:
     name: tradedojo-api
     runtime: node
     rootDir: backend
-    # Keep exactly ONE always-on instance: it holds the single Upstox feed connection and the replay timers.
-    # The free plan sleeps after 15 idle minutes, which would drop the live feed; use Starter or above.
-    plan: starter
+    # Exactly ONE instance: it holds the single Upstox feed connection and the replay timers.
+    # Free plan: the service sleeps after ~15 minutes without visitors and wakes (~1 min) on the next request.
+    # While asleep there is no live feed and stop-losses/targets don't trigger. Switch to "starter" for always-on.
+    plan: free
     numInstances: 1
     buildCommand: npm ci && npm run build
     # Migrations run automatically on startup.

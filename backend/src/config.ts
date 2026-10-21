@@ -16,6 +16,8 @@ const schema = z.object({
 
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   DB_CA_CERT_PATH: z.string().optional().default(''),
+  /** The CA certificate text itself, for hosts where uploading a file is awkward. Used when no path is set. */
+  DB_CA_CERT: z.string().optional().default(''),
   DB_POOL_MAX: z.coerce.number().int().min(1).max(18).default(10),
 
   ADMIN_EMAIL: z.string().optional().default(''),
