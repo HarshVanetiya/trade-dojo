@@ -165,26 +165,29 @@ Upstox recommends that only Upstox customers consume its data through third-part
 
 ---
 
-## 6. Moving to production
+## 6. Moving to production (Render + Cloudflare Pages)
 
-The backend is a normal long-running Node process, and all configuration is in environment variables.
+The backend is a normal long-running Node process (it keeps the Upstox WebSocket open and runs timers), so it goes on **Render**; the frontend is static files, so it goes on **Cloudflare Pages**. Serverless hosts such as Vercel functions cannot run the backend.
 
-**Backend** (any host that runs Node 22, e.g. a small VM, Render, Railway or Fly.io):
+### Backend on Render
 
-```bash
-cd backend
-npm ci
-npm run build
-npm run migrate
-npm start            # node dist/index.js
-```
+1. Push this repository to GitHub (already done if you're reading this there).
+2. In Render: **New + → Blueprint**, pick the repository. Render reads `render.yaml` and creates the `tradedojo-api` web service.
+3. When asked, fill in:
+   - `DATABASE_URL`: the Aiven Service URI **without** `?sslmode=require`
+   - `CORS_ORIGINS`: your Cloudflare Pages URL, e.g. `https://tradedojo.pages.dev` (you can add it after step 4 and redeploy)
+   - `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `UPSTOX_ANALYTICS_TOKEN`
+   (`JWT_SECRET` is generated for you.)
+4. In the service's **Environment → Secret Files**, add a file named `ca.pem` with the contents of Aiven's CA certificate. Render mounts it at `/etc/secrets/ca.pem`, which `DB_CA_CERT_PATH` already points to.
+5. Deploy. Migrations run on startup and the first history backfill starts in the background. Check `https://<your-service>.onrender.com/api/health`.
 
-Set the same variables as in `.env` on the host. Also set `CORS_ORIGINS` to your frontend URL (for example `https://tradedojo.pages.dev`) instead of `*`, and put the backend behind HTTPS (most hosts do this for you). The WebSocket lives on the same host at `/ws`. Run only **one** backend instance: it holds the single Upstox feed connection and the replay timers.
+Keep it on the **Starter** plan (or above) with **one** instance: the free plan sleeps after 15 idle minutes, which drops the live feed, and a second instance would open a second Upstox connection and split replay sessions.
 
-**Frontend** (Cloudflare Pages):
+### Frontend on Cloudflare Pages
 
-1. Create a Pages project from this repository with root directory `frontend`, build command `npm run build`, output directory `dist`.
-2. Add the environment variable `VITE_API_URL=https://your-backend.example.com`.
-3. Add a SPA fallback so deep links work: Cloudflare Pages serves `index.html` for unknown paths by default when there is no `404.html`.
+1. In Cloudflare: **Workers & Pages → Create → Pages → Connect to Git**, pick the repository.
+2. Settings: framework preset **None**, root directory `frontend`, build command `npm run build`, output directory `dist`.
+3. Environment variables: `VITE_API_URL` = `https://<your-service>.onrender.com` and `NODE_VERSION` = `22`.
+4. Deploy. Pages serves `index.html` for unknown paths, so links like `/trades/12` work. Put the resulting `*.pages.dev` URL (or your custom domain) into the backend's `CORS_ORIGINS`.
 
-With HTTPS in place the app can be installed to the home screen as a PWA. The service worker caches only the app shell, never API responses.
+With HTTPS on both sides the app can be installed to the home screen as a PWA, and the browser connects to the backend's WebSocket at `wss://<your-service>.onrender.com/ws` automatically. The service worker caches only the app shell, never API responses.
