@@ -1,0 +1,47 @@
+# Render Blueprint for the TradeDojo backend (https://render.com/docs/blueprint-spec).
+# In Render: New + -> Blueprint -> pick this repository. Fill in the "sync: false" values when asked.
+services:
+  - type: web
+    name: tradedojo-api
+    runtime: node
+    rootDir: backend
+    # Exactly ONE instance: it holds the single Upstox feed connection and the replay timers.
+    # Free plan: the service sleeps after ~15 minutes without visitors and wakes (~1 min) on the next request.
+    # While asleep there is no live feed and stop-losses/targets don't trigger. Switch to "starter" for always-on.
+    plan: free
+    numInstances: 1
+    buildCommand: npm ci && npm run build
+    # Migrations run automatically on startup.
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      # Upload Aiven's CA certificate as a Render "Secret File" named ca.pem; Render mounts it here.
+      - key: DB_CA_CERT_PATH
+        value: /etc/secrets/ca.pem
+      - key: DB_POOL_MAX
+        value: "10"
+      # Your Cloudflare Pages URL, e.g. https://tradedojo.pages.dev (comma-separate several).
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PRICE_PROVIDER
+        value: upstox
+      - key: UPSTOX_ANALYTICS_TOKEN
+        sync: false
+      - key: BACKFILL_ON_START
+        value: "1"
+      - key: AI_COACH_ENABLED
+        value: "0"

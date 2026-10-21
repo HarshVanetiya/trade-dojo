@@ -165,26 +165,34 @@ Upstox recommends that only Upstox customers consume its data through third-part
 
 ---
 
-## 6. Moving to production
+## 6. Moving to production (Render + Cloudflare Pages)
 
-The backend is a normal long-running Node process, and all configuration is in environment variables.
+The backend is a normal long-running Node process (it keeps the Upstox WebSocket open and runs timers), so it goes on **Render**; the frontend is static files, so it goes on **Cloudflare Pages**. Serverless hosts such as Vercel functions cannot run the backend.
 
-**Backend** (any host that runs Node 22, e.g. a small VM, Render, Railway or Fly.io):
+### Backend on Render
 
-```bash
-cd backend
-npm ci
-npm run build
-npm run migrate
-npm start            # node dist/index.js
-```
+1. Push this repository to GitHub (already done if you're reading this there).
+2. In Render: **New + → Blueprint**, pick the repository. Render reads `render.yaml` and creates the `tradedojo-api` web service.
+3. When asked, fill in:
+   - `DATABASE_URL`: the Aiven Service URI **without** `?sslmode=require`
+   - `CORS_ORIGINS`: your Cloudflare Pages URL, e.g. `https://tradedojo.pages.dev` (you can add it after step 4 and redeploy)
+   - `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `UPSTOX_ANALYTICS_TOKEN`
+   (`JWT_SECRET` is generated for you.)
+4. In the service's **Environment → Secret Files**, add a file named `ca.pem` with the contents of Aiven's CA certificate. Render mounts it at `/etc/secrets/ca.pem`, which `DB_CA_CERT_PATH` already points to. (If secret files aren't available to you, paste the certificate text into an environment variable `DB_CA_CERT` instead and delete `DB_CA_CERT_PATH`.)
+5. Deploy. Migrations run on startup and the first history backfill starts in the background. Check `https://<your-service>.onrender.com/api/health`.
 
-Set the same variables as in `.env` on the host. Also set `CORS_ORIGINS` to your frontend URL (for example `https://tradedojo.pages.dev`) instead of `*`, and put the backend behind HTTPS (most hosts do this for you). The WebSocket lives on the same host at `/ws`. Run only **one** backend instance: it holds the single Upstox feed connection and the replay timers.
+`render.yaml` uses Render's **free** plan with **one** instance (never more: a second instance would open a second Upstox connection and split replay sessions). On the free plan:
 
-**Frontend** (Cloudflare Pages):
+- The service sleeps after about 15 minutes without visitors and wakes on the next request, which takes about a minute. Users see the app loading while it wakes.
+- While asleep there is no live feed, so stop-losses, targets and pending orders don't trigger. On the first live price after waking, a stop-loss (or stop entry) whose level was crossed meanwhile fills at that price, treated like a market gap, and the review says so.
+- On waking, the startup backfill re-downloads the missed candles from Upstox, so charts don't keep gaps.
+- This setup deliberately doesn't use ping/uptime services to keep the free instance awake. When users need stops to work around the clock, change `plan: free` to `plan: starter` (paid, always on).
 
-1. Create a Pages project from this repository with root directory `frontend`, build command `npm run build`, output directory `dist`.
-2. Add the environment variable `VITE_API_URL=https://your-backend.example.com`.
-3. Add a SPA fallback so deep links work: Cloudflare Pages serves `index.html` for unknown paths by default when there is no `404.html`.
+### Frontend on Cloudflare Pages
 
-With HTTPS in place the app can be installed to the home screen as a PWA. The service worker caches only the app shell, never API responses.
+1. In Cloudflare: **Workers & Pages → Create → Pages → Connect to Git**, pick the repository.
+2. Settings: framework preset **None**, root directory `frontend`, build command `npm run build`, output directory `dist`.
+3. Environment variables: `VITE_API_URL` = `https://<your-service>.onrender.com` and `NODE_VERSION` = `22`.
+4. Deploy. Pages serves `index.html` for unknown paths, so links like `/trades/12` work. Put the resulting `*.pages.dev` URL (or your custom domain) into the backend's `CORS_ORIGINS`.
+
+With HTTPS on both sides the app can be installed to the home screen as a PWA, and the browser connects to the backend's WebSocket at `wss://<your-service>.onrender.com/ws` automatically. The service worker caches only the app shell, never API responses.
