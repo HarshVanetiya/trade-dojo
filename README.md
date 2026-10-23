@@ -2,6 +2,8 @@
 
 Learn to trade MCX **gold and silver** with **virtual points** instead of money. TradeDojo is a mobile-first web app (installable as a PWA) where you trade against real MCX futures prices from Upstox, and every closed trade gets a detailed review so you get better at making decisions.
 
+> **How this was built:** written with [Claude Code](https://claude.com/claude-code), Anthropic's AI coding agent, working from my requirements.
+
 - **No real orders are ever placed.** The backend only reads market data.
 - **Points are not money.** Everyone starts with 1,00,000 points (1 point behaves like ₹1 of buying power). Points can't be bought, topped up or redeemed.
 - **Live mode** trades against current MCX prices during market hours. **Replay mode** replays past days candle by candle, 24/7, on a separate balance.
