@@ -1,0 +1,10 @@
+# Caddy reverse proxy for the TradeDojo backend.
+# Replace YOUR-DNS-NAME with the VM's DNS name, e.g. tradedojo.centralindia.cloudapp.azure.com
+# Caddy gets and renews a free HTTPS certificate for it automatically, and passes
+# WebSocket upgrades (/ws) through without extra configuration.
+# Install: sudo cp deploy/azure/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
+
+YOUR-DNS-NAME {
+	encode gzip
+	reverse_proxy 127.0.0.1:4000
+}
