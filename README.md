@@ -12,6 +12,8 @@ Learn to trade MCX **gold and silver** with **virtual points** instead of money.
 
 ---
 
+> **New to the codebase?** Read [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md): architecture, design decisions, a demo script and likely interview questions.
+
 ## What's inside
 
 ```
