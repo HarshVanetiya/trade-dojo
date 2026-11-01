@@ -171,6 +171,8 @@ Upstox recommends that only Upstox customers consume its data through third-part
 
 ## 6. Moving to production (Render + Cloudflare Pages)
 
+> **Deploying on Azure instead?** Follow [docs/DEPLOY_AZURE.md](docs/DEPLOY_AZURE.md): backend on a Linux VM with Caddy for HTTPS, frontend on Azure Static Web Apps or Cloudflare Pages.
+
 The backend is a normal long-running Node process (it keeps the Upstox WebSocket open and runs timers), so it goes on **Render**; the frontend is static files, so it goes on **Cloudflare Pages**. Serverless hosts such as Vercel functions cannot run the backend.
 
 ### Backend on Render

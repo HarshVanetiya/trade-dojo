@@ -33,7 +33,7 @@ Be honest about this in interviews; it makes you more credible, not less.
 | Gap | Why it matters |
 |---|---|
 | Never run against the real Upstox API | It was built and tested with a mock price provider because the Upstox website wasn't reachable from the build environment. The real connection needs a first run with an Analytics Token. |
-| Not deployed yet | No public URL to show. Running it locally with the mock provider works for demos. |
+| Not deployed yet | No public URL to show yet. Deployment guides exist for Render ([README](../README.md) section 6) and an Azure VM ([DEPLOY_AZURE.md](DEPLOY_AZURE.md)). Running it locally with the mock provider works for demos. |
 | No CI pipeline | Tests run locally only; there is no GitHub Actions workflow. |
 | No email sending | With email verification switched on, the verification link is only logged on the server. |
 | Data licensing | Upstox data can't be shown publicly without their written permission (or a licensed vendor). |

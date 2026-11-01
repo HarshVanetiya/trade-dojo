@@ -1,0 +1,29 @@
+# systemd service for the TradeDojo backend on an Ubuntu VM.
+# Install: sudo cp deploy/azure/tradedojo.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#          sudo systemctl enable --now tradedojo
+[Unit]
+Description=TradeDojo backend (API + WebSocket + Upstox feed)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tradedojo
+Group=tradedojo
+WorkingDirectory=/opt/trade-dojo/backend
+# Settings come from /opt/trade-dojo/backend/.env (loaded by the app itself).
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node dist/index.js
+Restart=always
+RestartSec=5
+# Give in-flight work a moment to finish on stop/restart.
+TimeoutStopSec=20
+
+# Basic hardening: the app only needs to read its folder and talk to the network.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
